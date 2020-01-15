@@ -25,5 +25,5 @@ following variables, within main:
 state_machine = PROGRAM_08          # <---------------------------------------    Choose here the program you wish to run
 current_tape = TAPE_02; current_tape_index = START_CELL_INDEX_02  # <-------      Choose desired tape and start cell index
 
- This code has been written in Python 3.8.0 (but should be compatible with earlier versions of Python3)
+This code has been written in Python 3.8.0 (but should be compatible with earlier versions of Python3)
  
