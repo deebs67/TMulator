@@ -54,9 +54,7 @@ def execute_a_TM_step(current_tape, current_tape_index, current_card):
     #
     # Read the current symbol
     scanned_symbol = new_tape[new_tape_index]
-    #print('Scanned symbol:- ', scanned_symbol) #debug
     action_dict = current_card[scanned_symbol]
-    #print('Action dict:- ',action_dict) #debug
     character_to_write = action_dict['write']
     step_size = action_dict['step']
     new_card_index = action_dict['next_state']
@@ -72,7 +70,6 @@ def execute_a_TM_step(current_tape, current_tape_index, current_card):
     #
     # Return the updated parameters
     return_tuple = (new_tape, new_tape_index, new_card_index)
-    #print('Return tuple:- ', return_tuple) #debug
     return return_tuple
 
 

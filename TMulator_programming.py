@@ -278,4 +278,4 @@ TAPE_02 = ['_', 1, 0, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02
 TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_03 = 0   # For testing a logic gates (e.g. AND, OR etc.). Result over-written in middle if the 3 RHS blanks
 TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # For copying a 4-bit binary number
 TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # For adding two unary numbers separated by a blank
-TAPE_06 = ['_', 0, 0, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # Detect if two 2-bit binary numbers are equal or not
+TAPE_06 = ['_', 0, 0, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # Detect if two 2-bit binary numbers are equal or not, write 1 if they are, 0 otherwise, in middle if the 3 RHS blanks
