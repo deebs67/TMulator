@@ -290,7 +290,7 @@ PROGRAM_08 =    { # This program takes a binary number enclosed in blanks, start
 # Define the tape starting condition
 TAPE_00 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '_', 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_00 = 15 # For writing a blank at the end of a line of 1's
 TAPE_01 = ['_', 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_01 = 0  # For writing a blank at the end of a line of 1's
-TAPE_02 = ['_', 1, 1, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02 = 0   # For the binary incrementer, decrementor or binary bit flipper
+TAPE_02 = ['_', 1, 0, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02 = 0   # For the binary incrementer, decrementor or binary bit flipper
 TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_03 = 0   # For testing a logic gates (e.g. AND, OR etc.). Result over-written in middle if the 3 RHS blanks
 TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # For copying a 4-bit binary number
 TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # For adding two unary numbers separated by a blank
