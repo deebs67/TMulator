@@ -285,6 +285,54 @@ PROGRAM_08 =    { # This program takes a binary number enclosed in blanks, start
                         },                        
                 }
 
+PROGRAM_09 =    { # This program takes a two 2-bit binary numbers separated by a blank, and detects whether or not they are equal (writes a 1 if they are equal, 0 otherwise)
+                    0: 'Placemarker card for halting state 0',
+                    1:  { # Starting state - it should be sitting on the LHS blank, otherwise stop, there must be an error
+                            '_': { 'write': '_', 'step': +1, 'next_state': 2},  # Step right of the blank, and move to state 2
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # Write 'E' (for error) and stop
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}     # Write 'E' (for error) and stop
+                        }, 
+                    2:  {  # Read MS-bit of LHS binary word
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 0, 'step': +3, 'next_state': 3},   # Jump to corresponding bit in RHS word
+                            1: { 'write': 1, 'step': +3, 'next_state': 4}   # Jump to corresponding bit in RHS word 
+                        },
+                    3:  {  # Read MS-bit of RHS binary word, given that corresponding bit of LHS word was 0
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': -2, 'next_state': 5},   # This matches, now consider LS-bit
+                            1: { 'write': 1, 'step': +3, 'next_state': 8}   # It differs, so the words differ - need to write a 0 in the output cell, then halt
+                        },
+                    4:  {  # Read MS-bit of RHS binary word, given that corresponding bit of LHS word was 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +3, 'next_state': 8},   # It differs, so the words differ - need to write a 0 in the output cell, then halt
+                            1: { 'write': 1, 'step': -2, 'next_state': 5}   # This matches, now consider LS-bit
+                        },
+                    5:  {  # Read LS-bit of LHS binary word
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 0, 'step': +3, 'next_state': 6},   # Jump to corresponding bit in RHS word
+                            1: { 'write': 1, 'step': +3, 'next_state': 7}   # Jump to corresponding bit in RHS word 
+                        },
+                    6:  {  # Read LS-bit of RHS binary word, given that corresponding bit of LHS word was 0
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +2, 'next_state': 9},   # This matches, so the words match - need to write a 1 in the output cell, then halt
+                            1: { 'write': 1, 'step': +2, 'next_state': 8}   # It differs, so the words differ - need to write a 0 in the output cell, then halt
+                        },
+                    7:  {  # Read LS-bit of RHS binary word, given that corresponding bit of LHS word was 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +2, 'next_state': 8},   # It differs, so the words differ - need to write a 0 in the output cell, then halt
+                            1: { 'write': 1, 'step': +2, 'next_state': 9}   # This matches, so the words match - need to write a 1 in the output cell, then halt
+                        },
+                    8:  {  # The words differed, so write a 0 and halt
+                            '_': { 'write': 0, 'step': 0, 'next_state': 0},  # Write a 0 and halt
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # If we hit a blank, then there is an error
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # If we hit a blank, then there is an error
+                        },
+                    9:  {  # The words matched, so write a 1 and halt
+                            '_': { 'write': 1, 'step': 0, 'next_state': 0},  # Write a 1 and halt
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # If we hit a blank, then there is an error
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # If we hit a blank, then there is an error
+                        },                                                
+                }
 
 #
 # Define the tape starting condition
@@ -294,6 +342,7 @@ TAPE_02 = ['_', 1, 0, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02
 TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_03 = 0   # For testing a logic gates (e.g. AND, OR etc.). Result over-written in middle if the 3 RHS blanks
 TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # For copying a 4-bit binary number
 TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # For adding two unary numbers separated by a blank
+TAPE_06 = ['_', 0, 0, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # Detect if two 2-bit binary numbers are equal or not
 
 
 ##############################################################################
@@ -303,12 +352,12 @@ TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_
 if __name__=='__main__':
     #
     # Choose and initialise the program
-    state_machine = PROGRAM_08          # <------------------------------------------------------    Choose here the program you wish to run
+    state_machine = PROGRAM_09          # <------------------------------------------------------    Choose here the program you wish to run
     current_card_index = START_CARD_INDEX   # Should always be 1
 
     #
     # Choose and initialise the data
-    current_tape = TAPE_02; current_tape_index = START_CELL_INDEX_02  # <------------------------------      Choose desired tape and start cell index
+    current_tape = TAPE_06; current_tape_index = START_CELL_INDEX_06  # <------------------------------      Choose desired tape and start cell index
     
     #
     # Print out starting machine state
