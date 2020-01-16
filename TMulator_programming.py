@@ -268,17 +268,71 @@ PROGRAM_09 =    { # This program takes a two 2-bit binary numbers separated by a
                 }
 
 
+PROGRAM_10 =    { # This program takes a two 2-bit binary numbers separated by a blank, and detects whether or not the first is larger than the second (1 if so, 0 if smaller, 'E' if equal)
+                    0: 'Placemarker card for halting state 0',
+                    1:  { # Starting state - it should be sitting on the LHS blank, otherwise stop, there must be an error
+                            '_': { 'write': '_', 'step': +1, 'next_state': 2},  # Step right of the blank, and move to state 2
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # Write 'E' (for error) and stop
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}     # Write 'E' (for error) and stop
+                        }, 
+                    2:  {  # Read MS-bit of LHS binary word
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 0, 'step': +3, 'next_state': 3},   # Jump to corresponding bit in RHS word
+                            1: { 'write': 1, 'step': +3, 'next_state': 4}   # Jump to corresponding bit in RHS word 
+                        },
+                    3:  {  # Read MS-bit of RHS binary word, given that corresponding bit of LHS word was 0
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': -2, 'next_state': 5},   # This matches, now consider LS-bit
+                            1: { 'write': 1, 'step': +3, 'next_state': 8}   # RHS larger than LHS - need to write a 0 in the output cell, then halt
+                        },
+                    4:  {  # Read MS-bit of RHS binary word, given that corresponding bit of LHS word was 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +3, 'next_state': 9},   # RHS smaller than LHS - need to write a 1 in the output cell, then halt
+                            1: { 'write': 1, 'step': -2, 'next_state': 5}   # This matches, now consider LS-bit
+                        },
+                    5:  {  # Read LS-bit of LHS binary word (given that the MS-bits must have been equal)
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 0, 'step': +3, 'next_state': 6},   # Jump to corresponding bit in RHS word
+                            1: { 'write': 1, 'step': +3, 'next_state': 7}   # Jump to corresponding bit in RHS word 
+                        },
+                    6:  {  # Read LS-bit of RHS binary word, given that corresponding bit of LHS word was 0
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +2, 'next_state': 10},   # This matches, so the words match - need to write an 'E' in the output cell, then halt
+                            1: { 'write': 1, 'step': +2, 'next_state': 8}   # RHS larger than LHS - need to write a 0 in the output cell, then halt
+                        },
+                    7:  {  # Read LS-bit of RHS binary word, given that corresponding bit of LHS word was 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +2, 'next_state': 9},   # RHS smaller than LHS - need to write a 1 in the output cell, then halt
+                            1: { 'write': 1, 'step': +2, 'next_state': 10}   # This matches, so the words match - need to write an 'E' in the output cell, then halt
+                        },
+                    8:  {  # LHS was smaller, so write a 0 and halt
+                            '_': { 'write': 0, 'step': 0, 'next_state': 0},  # Write a 0 and halt
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # If we hit a blank, then there is an error
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # If we hit a blank, then there is an error
+                        },
+                    9:  {  # LHS was larger, so write a 1 and halt
+                            '_': { 'write': 1, 'step': 0, 'next_state': 0},  # Write a 1 and halt
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # If we hit a blank, then there is an error
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # If we hit a blank, then there is an error
+                        },
+                    10:  {  # Both words were equal, so write an 'E' (for 'Error') and halt
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write an 'E' and halt
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # If we hit a blank, then there is an error
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # If we hit a blank, then there is an error
+                        },                                                                        
+                }
+
 ##############################################################################
 # Tapes (and starting-cell indices)
 ##############################################################################
 #
 # Define the tape starting condition and start cell index
-TAPE_01 = ['_', 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_01 = 0  # For writing a blank at the end of a line of 1's
-TAPE_02 = ['_', 1, 0, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02 = 0   # For the binary incrementer, decrementor or binary bit flipper
-TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_03 = 0   # For testing a logic gates (e.g. AND, OR etc.). Result over-written in middle if the 3 RHS blanks
-TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # For copying a 4-bit binary number
-TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # For adding two unary numbers separated by a blank
-TAPE_06 = ['_', 0, 0, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # Detect if two 2-bit binary numbers are equal or not, write 1 if they are, 0 otherwise, in middle if the 3 RHS blanks
+TAPE_01 = ['_', 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_01 = 0  # PROGRAM_00:- For writing a blank at the end of a line of 1's
+TAPE_02 = ['_', 1, 0, 0, 0, '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_02 = 0   # PROGRAM_01/02/08:- For the binary incrementer, decrementor or binary bit flipper
+TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDEX_03 = 0   # PROGRAM_03/04/05:- For testing a logic gates (e.g. AND, OR etc.). Result over-written in middle if the 3 RHS blanks
+TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # PROGRAM_06:- For copying a 4-bit binary number
+TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # PROGRAM_07:- For adding two unary numbers separated by a blank
+TAPE_06 = ['_', 0, 1, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # PROGRAM_09/10:- Detect if two 2-bit binary numbers are equal or not, write 1 if they are, 0 otherwise, in middle if the 3 RHS blanks
 
 #
 ################################################################################
