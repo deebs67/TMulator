@@ -36,6 +36,8 @@ following variables, within main:
 state_machine = PROGRAM_08          # <---------------------------------------    Choose here the program you wish to run
 current_tape = TAPE_02; current_tape_index = START_CELL_INDEX_02  # <-------      Choose desired tape and start cell index
 
+There are a number of additional programs and tapes in the companion imported file 'TMulator_programming.py'
+
 # Language
-This code has been written in Python 3.8.0 (but should be compatible with some earlier versions of Python3)
+This code has been written mostly in Python 3.8.0 (but should be compatible with at least some earlier versions of Python3)
  
