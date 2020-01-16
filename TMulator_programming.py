@@ -267,7 +267,6 @@ PROGRAM_09 =    { # This program takes a two 2-bit binary numbers separated by a
                         },                                                
                 }
 
-
 PROGRAM_10 =    { # This program takes a two 2-bit binary numbers separated by a blank, and detects whether or not the first is larger than the second (1 if so, 0 if smaller, 'E' if equal)
                     0: 'Placemarker card for halting state 0',
                     1:  { # Starting state - it should be sitting on the LHS blank, otherwise stop, there must be an error
@@ -322,6 +321,50 @@ PROGRAM_10 =    { # This program takes a two 2-bit binary numbers separated by a
                         },                                                                        
                 }
 
+PROGRAM_11 =    { # This program takes a single unary number, and outputs the same number in binary format
+                    0: 'Placemarker card for halting state 0',
+                    1:  { # Starting state - it should be sitting on the LHS blank, otherwise stop, there must be an error
+                            '_': { 'write': '_', 'step': +1, 'next_state': 2},  # Step right of the blank, and move to state 2
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # Write 'E' (for error) and stop
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}     # Write 'E' (for error) and stop
+                        }, 
+                    2:  {  # Read unary LHS symbol
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 0, 'step': +1, 'next_state': 3},   # Move to unary middle symbol
+                            1: { 'write': 1, 'step': +5, 'next_state': 4}   # Jump to corresponding bit in binary, and increment it 
+                        },
+                    3:  {  # Read unary middle symbol
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': +1, 'next_state': 7},   # Go to read unary RHS symbol
+                            1: { 'write': 1, 'step': +4, 'next_state': 5}   # Middle symbol is 1, so increment binary word
+                        },
+                    4:  {  # Increment LS-bit of binary word due to unary LHS symbol being 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 1, 'step': -4, 'next_state': 3},   # Increment, then jump back to unary middle symbol
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # This bit shouldn't yet be 1, so flag an error
+                        },
+                    5:  {  # Increment LS-bit of binary word due to unary middle symbol being 1, and carry to next bit up
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # Write 'E' (for error) and stop
+                            0: { 'write': 'E', 'step': 0, 'next_state': 0},   # Error - If middle symbol was 1, then this symbol should be 1, since RHS unary symbol would have been 1
+                            1: { 'write': 0, 'step': -1, 'next_state': 6}   # Carry to binary MSB
+                        },
+                    6:  {  # Carrying up to the binary MSB due to unary middle symbol being 1
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 1, 'step': -2, 'next_state': 7},   # Do the carry, then jump to read unary RHS symbol
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # Error - this bit shouldn't yet be 1
+                        },
+                    7:  {  # Read unary RHS symbol
+                            '_': { 'write': 'E', 'step': 0, 'next_state': 0},  # If we hit a blank, then there is an error
+                            0: { 'write': 0, 'step': 0, 'next_state': 0},   # That's it, we're done
+                            1: { 'write': 1, 'step': +3, 'next_state': 8}   # We need to increment the binary LS-bit
+                        },
+                    8:  {  # Increment binary LSB due to unary RHS symbol being 1
+                            '_': { 'write': 0, 'step': 0, 'next_state': 0},  # Error - Write a 0 and halt
+                            0: { 'write': 1, 'step': 0, 'next_state': 0},   # Write result and halt
+                            1: { 'write': 'E', 'step': 0, 'next_state': 0}   # Error - we are expecting this bit to be 0
+                        },                                                                        
+                }
+
 ##############################################################################
 # Tapes (and starting-cell indices)
 ##############################################################################
@@ -333,6 +376,7 @@ TAPE_03 = ['_', 1, 1, '_', '_', '_', 0, 0, 0, 0, 0, 0, 0, 0, 0]; START_CELL_INDE
 TAPE_04 = ['_', 1, 0, 0, 0, '_', '_', '_', '_', '_', '_', 0, 0, 0, 0]; START_CELL_INDEX_04 = 0   # PROGRAM_06:- For copying a 4-bit binary number
 TAPE_05 = ['_', 1, 1, 1, 1, '_', 1, 1, 1, 1, 1, '_', 0, 0, 0]; START_CELL_INDEX_05 = 0   # PROGRAM_07:- For adding two unary numbers separated by a blank
 TAPE_06 = ['_', 0, 1, '_', 1, 0, '_', '_', '_', 0 ]; START_CELL_INDEX_06 = 0   # PROGRAM_09/10:- Detect if two 2-bit binary numbers are equal or not, write 1 if they are, 0 otherwise, in middle if the 3 RHS blanks
+TAPE_07 = ['_', 1, 1, 0, '_', 0, 0, '_', '_', '_' ]; START_CELL_INDEX_07 = 0   # PROGRAM_11:- Read unary number (0-3), write it in binary (2-bits)
 
 #
 ################################################################################
