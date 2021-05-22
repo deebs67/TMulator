@@ -1,6 +1,6 @@
 # TMulator
 A Turing Machine emulator written in Python  
-See also a version of this hosted on Replit: https://replit.com/@deebs67/TMulator  
+See also a version of this hosted on Replit (which can be run from a web browser): https://replit.com/@deebs67/TMulator  
 
 # References
 Inspiration has been drawn from references such as the ones at the following URLs:
